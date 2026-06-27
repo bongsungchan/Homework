@@ -99,20 +99,6 @@ final class RepositoryWebFeatureTests: XCTestCase {
         await store.send(.pageLoadFailed)
     }
 
-    func test_dismissTapped_noStateChange_noEffect() async {
-        let store = makeStore()
-        await store.send(.dismissTapped)
-    }
-
-    func test_dismissTapped_afterLoadFinished_isLoadingRemainsfalse() async {
-        let store = makeStore()
-
-        await store.send(.pageLoadFinished) {
-            $0.isLoading = false
-        }
-        await store.send(.dismissTapped)
-    }
-
     func test_loadSequence_startedThenFinished() async {
         let store = makeStore()
 

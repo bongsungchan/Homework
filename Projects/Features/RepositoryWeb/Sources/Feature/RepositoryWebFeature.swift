@@ -27,7 +27,6 @@ public struct RepositoryWebFeature {
         case pageLoadStarted
         case pageLoadFinished
         case pageLoadFailed
-        case dismissTapped
     }
 
     // MARK: - body
@@ -43,8 +42,6 @@ public struct RepositoryWebFeature {
                 return .none
             case .pageLoadFailed:
                 state.isLoading = false
-                return .none
-            case .dismissTapped:
                 return .none
             }
         }

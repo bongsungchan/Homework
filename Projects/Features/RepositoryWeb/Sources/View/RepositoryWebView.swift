@@ -38,19 +38,6 @@ public struct RepositoryWebView: View {
         .background(Color.dsBackground)
         .navigationTitle(store.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    store.send(.dismissTapped)
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.dsBody)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .accessibilityLabel("닫기")
-            }
-        }
     }
 }
 
