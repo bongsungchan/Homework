@@ -14,11 +14,11 @@ public struct SearchView: View {
     public var body: some View {
         NavigationStack {
             contentView
-                .navigationTitle("GitHub 검색")
+                .navigationTitle("Search")
                 .searchable(
                     text: $store.query.sending(\.queryChanged),
                     placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "저장소를 검색하세요"
+                    prompt: "저장소 검색"
                 )
                 .onSubmit(of: .search) {
                     store.send(.searchSubmitted)
@@ -98,7 +98,7 @@ public struct SearchView: View {
 
     private var recentSearchHeader: some View {
         HStack(alignment: .center) {
-            Text("최근 검색어")
+            Text("최근 검색")
                 .font(.dsFootnote)
                 .foregroundStyle(Color.dsSecondaryText)
                 .textCase(nil)
@@ -108,7 +108,7 @@ public struct SearchView: View {
             Button {
                 store.send(.recentSearchDeletedAll)
             } label: {
-                Text("전체 삭제")
+                Text("전체삭제")
                     .font(.dsFootnote)
                     .foregroundStyle(Color.dsAccent)
             }
@@ -120,35 +120,48 @@ public struct SearchView: View {
     }
 
     private func recentSearchRow(_ item: RecentSearch) -> some View {
-        Button {
-            store.send(.recentSearchTapped(item))
-        } label: {
-            HStack(spacing: DSSpacing.sm) {
-                Image(systemName: "clock")
-                    .foregroundStyle(Color.dsSecondaryText)
-                    .frame(width: 20, height: 20)
-                    .accessibilityHidden(true)
-
-                VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text(item.query)
-                        .font(.dsBody)
-                        .foregroundStyle(Color.dsPrimaryText)
-                        .lineLimit(1)
-
-                    Text(item.date.formatted(date: .abbreviated, time: .omitted))
-                        .font(.dsCaption)
+        HStack(spacing: 0) {
+            Button {
+                store.send(.recentSearchTapped(item))
+            } label: {
+                HStack(spacing: DSSpacing.sm) {
+                    Image(systemName: "clock")
                         .foregroundStyle(Color.dsSecondaryText)
-                }
+                        .frame(width: 20, height: 20)
+                        .accessibilityHidden(true)
 
-                Spacer(minLength: 0)
+                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                        Text(item.query)
+                            .font(.dsBody)
+                            .foregroundStyle(Color.dsPrimaryText)
+                            .lineLimit(1)
+
+                        Text(item.date.formatted(date: .abbreviated, time: .omitted))
+                            .font(.dsCaption)
+                            .foregroundStyle(Color.dsSecondaryText)
+                    }
+
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+                .frame(minHeight: 44)
             }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(item.query), \(item.date.formatted(date: .abbreviated, time: .omitted))")
+            .accessibilityHint("탭하면 검색합니다")
+
+            Button {
+                store.send(.recentSearchDeleted(item.id))
+            } label: {
+                Image(systemName: "xmark")
+                    .foregroundStyle(Color.dsSecondaryText)
+            }
+            .frame(minWidth: 44, minHeight: 44)
             .contentShape(Rectangle())
-            .frame(minHeight: 44)
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(item.query) 삭제")
         }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(item.query), \(item.date.formatted(date: .abbreviated, time: .omitted))")
-        .accessibilityHint("탭하면 검색합니다")
     }
 
     private var suggestionsListView: some View {
@@ -193,18 +206,16 @@ public struct SearchView: View {
                     .frame(width: 20, height: 20)
                     .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text(item.query)
-                        .font(.dsBody)
-                        .foregroundStyle(Color.dsPrimaryText)
-                        .lineLimit(1)
+                Text(item.query)
+                    .font(.dsBody)
+                    .foregroundStyle(Color.dsPrimaryText)
+                    .lineLimit(1)
 
-                    Text(item.date.formatted(date: .abbreviated, time: .omitted))
-                        .font(.dsCaption)
-                        .foregroundStyle(Color.dsSecondaryText)
-                }
+                Spacer(minLength: DSSpacing.sm)
 
-                Spacer(minLength: 0)
+                Text(item.date.formatted(.dateTime.month().day()))
+                    .font(.dsCaption)
+                    .foregroundStyle(Color.dsSecondaryText)
             }
             .contentShape(Rectangle())
             .frame(minHeight: 44)
@@ -217,17 +228,9 @@ public struct SearchView: View {
 
     private func errorView(_ error: SearchError) -> some View {
         ErrorStateView(
-            message: errorMessage(error),
+            message: error.userFacingMessage,
             onRetry: { store.send(.onAppear) }
         )
-    }
-
-    private func errorMessage(_ error: SearchError) -> String {
-        switch error {
-        case .network:      return "인터넷 연결을 확인해 주세요."
-        case .rateLimited:  return "요청이 많아요. 잠시 후 다시 시도해 주세요."
-        default:            return "오류가 발생했습니다. 다시 시도해 주세요."
-        }
     }
 }
 

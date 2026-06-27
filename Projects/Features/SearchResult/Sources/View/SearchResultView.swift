@@ -19,7 +19,7 @@ public struct SearchResultView: View {
 
             case .empty:
                 EmptyStateView(
-                    title: "검색 결과가 없어요.",
+                    title: SearchError.empty.userFacingMessage,
                     message: "다른 키워드로 검색해 보세요."
                 )
                 .accessibilityElement(children: .combine)
@@ -55,28 +55,25 @@ public struct SearchResultView: View {
     }
 
     private var principalTitle: some View {
-        VStack(spacing: DSSpacing.xxs) {
-            Text(store.keyword)
-                .font(.dsHeadline)
-                .foregroundStyle(Color.dsPrimaryText)
-                .lineLimit(1)
-
-            if store.totalCount > 0 {
-                Text("총 \(store.totalCount.formatted())개")
-                    .font(.dsCaption)
-                    .foregroundStyle(Color.dsSecondaryText)
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            store.totalCount > 0
-                ? "\(store.keyword) 검색 결과, 총 \(store.totalCount.formatted())개"
-                : store.keyword
-        )
+        Text(store.keyword)
+            .font(.dsHeadline)
+            .foregroundStyle(Color.dsPrimaryText)
+            .lineLimit(1)
+            .accessibilityLabel("\(store.keyword) 검색 결과")
     }
 
     private var repositoryList: some View {
         List {
+            if store.totalCount > 0 {
+                Text("\(store.totalCount.formatted())개 저장소")
+                    .font(.dsFootnote)
+                    .foregroundStyle(Color.dsSecondaryText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.dsBackground)
+                    .accessibilityLabel("총 \(store.totalCount.formatted())개 저장소")
+            }
+
             ForEach(store.repositories) { repo in
                 Button {
                     store.send(.repositoryTapped(repo))
@@ -88,7 +85,9 @@ public struct SearchResultView: View {
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.dsBackground)
                 .onAppear {
-                    if repo.id == store.repositories.last?.id {
+                    let threshold = 3
+                    if let index = store.repositories.firstIndex(where: { $0.id == repo.id }),
+                       index >= store.repositories.count - threshold {
                         store.send(.fetchNextPage)
                     }
                 }
@@ -140,20 +139,6 @@ public struct SearchResultView: View {
     }
 }
 
-private extension Font {
-    static var dsFootnote: Font { .system(.footnote) }
-}
-
-private extension SearchError {
-    var userFacingMessage: String {
-        switch self {
-        case .network:     return "인터넷 연결을 확인해 주세요."
-        case .rateLimited: return "요청이 많아요. 잠시 후 다시 시도해 주세요."
-        case .empty:       return "검색 결과가 없어요."
-        default:           return "오류가 발생했어요. 다시 시도해 주세요."
-        }
-    }
-}
 
 #if DEBUG
 
