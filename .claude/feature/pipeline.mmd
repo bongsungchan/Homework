@@ -1,0 +1,13 @@
+flowchart LR
+    S([Scaffold]):::done
+    DS([Design System]):::todo
+    C([Core]):::todo
+    F([Features]):::todo
+    R([Review]):::todo
+    V([Verify]):::todo
+    DV([Device Verify]):::todo
+
+    S --> DS --> C --> F --> R --> V --> DV
+
+    classDef done fill:#50C878,stroke:#2E8B57,color:#fff
+    classDef todo fill:#D0D0D0,stroke:#A0A0A0,color:#444

@@ -1,0 +1,61 @@
+flowchart TD
+    subgraph APP["App"]
+        A([GithubSearch App])
+    end
+
+    subgraph FEAT["Features"]
+        F1([검색 입력])
+        F2([검색 결과 목록])
+        F3([저장소 웹 뷰어])
+    end
+
+    subgraph DOMAIN["Domain"]
+        D1([도메인 모델])
+        D2([유스케이스 / 클라이언트 키])
+    end
+
+    subgraph CORE["Core"]
+        C1([네트워킹 클라이언트])
+        C2([영속성 클라이언트])
+        C3([디자인 시스템])
+    end
+
+    EXT([ComposableArchitecture]):::ext
+
+    A --> F1
+    A --> F2
+    A --> F3
+
+    F1 --> D1
+    F1 --> D2
+    F1 --> C3
+    F2 --> D1
+    F2 --> D2
+    F2 --> C3
+    F3 --> D1
+    F3 --> C3
+
+    D2 --> D1
+    D2 --> C1
+    D2 --> C2
+
+    C1 --> D1
+    C2 --> D1
+
+    A -.->|외부| EXT
+    F1 -.->|외부| EXT
+    F2 -.->|외부| EXT
+    F3 -.->|외부| EXT
+    D2 -.->|외부| EXT
+
+    classDef app fill:#4A90D9,stroke:#2C5F8A,color:#fff
+    classDef feat fill:#7B68EE,stroke:#5A4BC7,color:#fff
+    classDef domain fill:#50C878,stroke:#2E8B57,color:#fff
+    classDef core fill:#FF8C42,stroke:#CC6A1F,color:#fff
+    classDef ext fill:#B0B0B0,stroke:#808080,color:#fff
+
+    class A app
+    class F1,F2,F3 feat
+    class D1,D2 domain
+    class C1,C2,C3 core
+    class EXT ext
