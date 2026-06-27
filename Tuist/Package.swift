@@ -6,7 +6,12 @@ import ProjectDescription
 
 let packageSettings = PackageSettings(
     productTypes: [
-        "ComposableArchitecture": .framework
+        "ComposableArchitecture": .framework,
+        // 정적 라이브러리가 ComposableArchitecture·Persistence 양쪽에 중복 링크되어
+        // 런타임 "Class ... implemented in both" 경고가 발생하는 것을 막기 위해
+        // 공유 전이 의존성도 단일 동적 프레임워크로 통일한다.
+        "IssueReporting": .framework,
+        "XCTestDynamicOverlay": .framework
     ],
     baseSettings: .settings(
         base: [

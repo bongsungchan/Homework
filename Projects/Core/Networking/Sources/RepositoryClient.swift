@@ -5,9 +5,7 @@ import OSLog
 
 @DependencyClient
 public struct RepositoryClient: Sendable {
-    public var searchRepositories: @Sendable (_ keyword: String, _ page: Int) async throws -> SearchResult = { _, _ in
-        SearchResult(totalCount: 0, items: [])
-    }
+    public var searchRepositories: @Sendable (_ keyword: String, _ page: Int) async throws -> SearchResult
 }
 
 extension RepositoryClient: DependencyKey {

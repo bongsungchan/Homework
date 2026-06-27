@@ -12,19 +12,17 @@ public struct SearchView: View {
     }
 
     public var body: some View {
-        NavigationStack {
-            contentView
-                .navigationTitle("Search")
-                .searchable(
-                    text: $store.query.sending(\.queryChanged),
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "저장소 검색"
-                )
-                .onSubmit(of: .search) {
-                    store.send(.searchSubmitted)
-                }
-        }
-        .onAppear { store.send(.onAppear) }
+        contentView
+            .navigationTitle("Search")
+            .searchable(
+                text: $store.query.sending(\.queryChanged),
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "저장소 검색"
+            )
+            .onSubmit(of: .search) {
+                store.send(.searchSubmitted)
+            }
+            .onAppear { store.send(.onAppear) }
     }
 
     @ViewBuilder
@@ -259,20 +257,20 @@ private func makeStore(
 }
 
 #Preview("최근 검색어 — Light") {
-    SearchView(store: makeStore())
+    NavigationStack { SearchView(store: makeStore()) }
 }
 
 #Preview("최근 검색어 — Dark") {
-    SearchView(store: makeStore())
+    NavigationStack { SearchView(store: makeStore()) }
         .preferredColorScheme(.dark)
 }
 
 #Preview("최근 검색어 없음 (Empty)") {
-    SearchView(store: makeStore(viewState: .empty, recentSearches: []))
+    NavigationStack { SearchView(store: makeStore(viewState: .empty, recentSearches: [])) }
 }
 
 #Preview("자동완성 (입력 중)") {
-    SearchView(store: makeStore(query: "swift"))
+    NavigationStack { SearchView(store: makeStore(query: "swift")) }
 }
 
 #Preview("자동완성 결과 없음") {

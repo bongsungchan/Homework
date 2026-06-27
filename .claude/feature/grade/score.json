@@ -1,0 +1,78 @@
+{
+  "total": 90,
+  "gradedAt": null,
+  "dimensions": [
+    {
+      "key": "requirements",
+      "weight": 35,
+      "score": 94,
+      "evidence": [
+        "필수 10항목 전부 구현 (SearchFeature/SearchResultFeature/RecentSearchClient)",
+        "최대10·날짜내림차순·중복갱신 RecentSearchClient.swift:24,38-42",
+        "영속성 UserDefaults RecentSearchClient.swift:18-29",
+        "WebView 전이 AppMain.swift:53-55, RepositoryWebView.swift:16"
+      ],
+      "gaps": ["최근검색어 표시가 searchable 활성에 의존하는 idle 경로 존재 SearchView.swift:31-33"]
+    },
+    {
+      "key": "codeQuality",
+      "weight": 30,
+      "score": 90,
+      "evidence": [
+        "TCA 단방향 + Dependency 주입 RepositoryClient/RecentSearchClient",
+        "도메인 에러 변환 RepositoryClient.swift:77-89, SearchError.swift",
+        "debounce+cancellable SearchFeature.swift:71-75",
+        "레이어드 멀티모듈 단방향, 75개 TestStore 테스트 0 실패"
+      ],
+      "gaps": ["suggestion 필터 중복 SearchFeature.swift:80,128", "RepositoryClient.testValue 빈 구현"]
+    },
+    {
+      "key": "completeness",
+      "weight": 15,
+      "score": 80,
+      "evidence": [
+        "명명 시뮬레이터 BUILD SUCCEEDED",
+        "전 스킴 75 tests 0 failures (App1/Search25/SearchResult18/Web13/Net7/Persist9/Models2)"
+      ],
+      "gaps": ["generic/iOS Simulator(x86_64) BUILD FAILED — swift-navigation PhaseScriptExecution(소스 무관)"]
+    },
+    {
+      "key": "uxDesign",
+      "weight": 10,
+      "score": 88,
+      "evidence": [
+        "예시1 일치: Search타이틀/최근검색/전체삭제/x버튼/자동완성+날짜 SearchView.swift:16,99,109,155,214",
+        "예시2 일치: N개 저장소 + 아바타/name/login SearchResultView.swift:68, RepositoryRowView",
+        "다크모드 시맨틱 컬러 DSColor.swift:173-176, 접근성·44pt·DynamicType 프리뷰"
+      ],
+      "gaps": ["전체삭제 색이 예시(핑크) 대신 systemBlue", "결과화면 상단 검색바를 inline 타이틀로 대체"]
+    },
+    {
+      "key": "bonus",
+      "weight": 10,
+      "score": 92,
+      "evidence": [
+        "자동완성+날짜(최근검색어 추출) SearchFeature.swift:77-83",
+        "prefetch n-3 SearchResultView.swift:87-93",
+        "페이지네이션 로딩+인라인 재시도 SearchResultView.swift:100-139"
+      ],
+      "gaps": ["자동완성이 최근검색어 추출만(실시간 API 자동완성 아님)"]
+    }
+  ],
+  "requirements": [
+    {"id": "S1", "status": "implemented", "ref": "SearchView.swift:22; AppMain.swift:47-50"},
+    {"id": "S2", "status": "implemented", "ref": "SearchFeature.swift:66-68; RecentSearchClient.swift:40-42"},
+    {"id": "S3", "status": "implemented", "ref": "RecentSearchClient.swift:24,39"},
+    {"id": "S4", "status": "implemented", "ref": "SearchView.swift:106,152"},
+    {"id": "S5", "status": "implemented", "ref": "RecentSearchClient.swift:18-29"},
+    {"id": "S6", "status": "implemented", "ref": "SearchFeature.swift:99-101"},
+    {"id": "R1", "status": "implemented", "ref": "SearchResultView.swift:66"},
+    {"id": "R2", "status": "implemented", "ref": "SearchResultView.swift:68"},
+    {"id": "R3", "status": "implemented", "ref": "RepositoryRowView.swift:11,30,36; RepositoryClient.swift:43-46"},
+    {"id": "R4", "status": "implemented", "ref": "AppMain.swift:53-55; RepositoryWebView.swift:16"},
+    {"id": "A1", "status": "implemented", "ref": "SearchFeature.swift:77-83"},
+    {"id": "A2", "status": "implemented", "ref": "SearchView.swift:214"},
+    {"id": "A3", "status": "implemented", "ref": "SearchResultView.swift:87-93"},
+    {"id": "A4", "status": "implemented", "ref": "SearchResultView.swift:100-105"}
+  ]
+}

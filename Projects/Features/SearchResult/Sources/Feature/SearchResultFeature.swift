@@ -80,7 +80,8 @@ public struct SearchResultFeature {
                 return .none
 
             case let .searchFailed(error):
-                state.viewState = .failed(error)
+                // 빈 결과는 실패가 아니라 정상적인 빈 상태로 표시한다.
+                state.viewState = error == .empty ? .empty : .failed(error)
                 state.isPaginationLoading = false
                 return .none
 

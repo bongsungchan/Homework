@@ -112,7 +112,7 @@ public struct SearchResultView: View {
     private func inlinePaginationError(_ error: SearchError) -> some View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "exclamationmark.circle")
-                .foregroundStyle(DSColor.foregroundSecondary)
+                .foregroundStyle(Color.dsSecondaryText)
                 .accessibilityHidden(true)
 
             Text(error.userFacingMessage)
