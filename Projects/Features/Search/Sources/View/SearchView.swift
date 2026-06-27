@@ -88,6 +88,7 @@ public struct SearchView: View {
                 }
             } header: {
                 recentSearchHeader
+                    .listRowInsets(EdgeInsets())
             }
         }
         .listStyle(.plain)
@@ -114,7 +115,10 @@ public struct SearchView: View {
             .contentShape(Rectangle())
             .accessibilityLabel("최근 검색어 전체 삭제")
         }
-        .padding(.vertical, DSSpacing.xxs)
+        .padding(.horizontal, DSSpacing.md)
+        .padding(.vertical, DSSpacing.xs)
+        .frame(maxWidth: .infinity)
+        .background(Color.dsBackground)
     }
 
     private func recentSearchRow(_ item: RecentSearch) -> some View {

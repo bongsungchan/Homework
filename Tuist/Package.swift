@@ -11,7 +11,12 @@ let packageSettings = PackageSettings(
         // 런타임 "Class ... implemented in both" 경고가 발생하는 것을 막기 위해
         // 공유 전이 의존성도 단일 동적 프레임워크로 통일한다.
         "IssueReporting": .framework,
-        "XCTestDynamicOverlay": .framework
+        "XCTestDynamicOverlay": .framework,
+        // swift-syntax C shim의 module.modulemap이 읽기 전용으로 프레임워크에 복사되어
+        // tuist generate 후 재빌드 시 "cp: ... Permission denied"로 실패하는 문제를 막기 위해
+        // 프레임워크 대신 정적 라이브러리로 빌드한다(매크로는 빌드타임 전용이라 안전).
+        "_SwiftSyntaxCShims": .staticFramework,
+        "_SwiftLibraryPluginProviderCShims": .staticFramework
     ],
     baseSettings: .settings(
         base: [
