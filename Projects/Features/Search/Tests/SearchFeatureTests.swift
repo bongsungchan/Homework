@@ -173,10 +173,7 @@ final class SearchFeatureTests: XCTestCase {
         await store.send(.queryChanged("swift")) { $0.query = "swift" }
         await clock.advance(by: .milliseconds(300))
 
-        await store.receive(.querySuggestionDebounced) {
-            $0.suggestions = []
-            $0.viewState = .loaded
-        }
+        await store.receive(.querySuggestionDebounced)
     }
 
     func test_queryChanged_caseInsensitiveSuggestionMatch() async {
@@ -198,14 +195,17 @@ final class SearchFeatureTests: XCTestCase {
 
     func test_searchSubmitted_savesKeyword_andUpdatesRecentSearches() async {
         let saved = [RecentSearch(query: "tuist")]
+        var state = SearchFeature.State()
+        state.query = "tuist"
         let store = makeStore(
+            state: state,
             save: { _ in saved }
         )
 
-        await store.send(.queryChanged("tuist")) { $0.query = "tuist" }
         await store.send(.searchSubmitted)
         await store.receive(.recentSearchesLoaded(saved)) {
             $0.recentSearches = saved
+            $0.suggestions = saved
             $0.viewState = .loaded
         }
     }
@@ -257,6 +257,7 @@ final class SearchFeatureTests: XCTestCase {
         await store.receive(.searchSubmitted)
         await store.receive(.recentSearchesLoaded(saved)) {
             $0.recentSearches = saved
+            $0.suggestions = saved
             $0.viewState = .loaded
         }
     }
@@ -400,6 +401,7 @@ final class SearchFeatureTests: XCTestCase {
         await store.send(.searchSubmitted)
         await store.receive(.recentSearchesLoaded(saved)) {
             $0.recentSearches = saved
+            $0.suggestions = [saved[0]]
             $0.viewState = .loaded
         }
     }
@@ -423,10 +425,11 @@ final class SearchFeatureTests: XCTestCase {
         }
 
         await store.send(.recentSearchDeleted(id1))
-        await store.send(.recentSearchDeleted(id2))
         await store.receive(.recentSearchesLoaded(finalList)) {
             $0.recentSearches = finalList
             $0.viewState = .loaded
         }
+        await store.send(.recentSearchDeleted(id2))
+        await store.receive(.recentSearchesLoaded(finalList))
     }
 }

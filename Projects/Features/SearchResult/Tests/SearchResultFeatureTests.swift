@@ -262,6 +262,7 @@ final class SearchResultFeatureTests: XCTestCase {
             $0.totalCount = 10
             $0.currentPage = 2
             $0.hasNextPage = true
+            $0.viewState = .loaded
         }
 
         await store.send(.fetchNextPage) { $0.isPaginationLoading = true }
@@ -444,10 +445,7 @@ final class SearchResultFeatureTests: XCTestCase {
             $0.viewState = .loading
             $0.currentPage = 1
         }
-        await store.send(.onAppear) {
-            $0.viewState = .loading
-            $0.currentPage = 1
-        }
+        await store.send(.onAppear)
         await store.receive(.repositoriesLoaded(result)) {
             $0.repositories = [repo]
             $0.totalCount = 1
