@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.app/Contents/Developer
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tuist (via mise)
+        uses: jdx/mise-action@v2
+
+      - name: Cache Tuist & SPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/tuist
+            .build
+          key: ${{ runner.os }}-tuist-${{ hashFiles('**/Package.resolved', '**/Tuist.swift', '**/Project.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-tuist-
+
+      - name: Tuist Install
+        run: tuist install
+
+      - name: Tuist Generate
+        run: tuist generate --no-open
+
+      - name: Tuist Test
+        run: tuist test
+
+  lint:
+    name: SwiftLint
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict --reporter github-actions-logging

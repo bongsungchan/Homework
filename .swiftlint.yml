@@ -1,0 +1,52 @@
+# SwiftLint 설정 — Swift/iOS 표준 + 본 프로젝트 컨벤션
+disabled_rules:
+  - todo
+  - trailing_comma
+
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - first_where
+  - contains_over_filter_count
+  - sorted_imports
+  - explicit_init
+  - closure_spacing
+  - redundant_nil_coalescing
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - overridden_super_call
+  - prohibited_super_call
+
+excluded:
+  - "**/Derived"
+  - "**/.build"
+  - "Tuist/**"
+  - "**/*.generated.swift"
+
+line_length:
+  warning: 120
+  error: 160
+  ignores_comments: true
+  ignores_urls: true
+
+type_body_length:
+  warning: 300
+  error: 400
+
+file_length:
+  warning: 400
+  error: 600
+
+identifier_name:
+  min_length:
+    warning: 2
+  excluded:
+    - id
+    - q
+    - x
+    - y
+
+force_cast: error
+force_try: error
+
+reporter: "xcode"

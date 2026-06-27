@@ -1,0 +1,23 @@
+# SwiftFormat 설정 — Swift API Design Guidelines 정렬
+--swiftversion 5.10
+
+# 들여쓰기 / 줄
+--indent 4
+--maxwidth 120
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+
+# import 정렬
+--importgrouping testable-bottom
+
+# 스타일
+--self remove
+--trailingcommas always
+--commas inline
+--semicolons never
+--header strip
+
+# 비활성화 (TCA 가독성)
+--disable wrapMultilineStatementBraces
+--exclude Derived,.build,Tuist

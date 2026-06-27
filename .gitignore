@@ -1,0 +1,28 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Tuist generated
+*.xcodeproj
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+Derived/
+.tuist-cache/
+graph.dot
+
+# Swift / Xcode
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+
+# Figma raw dumps (large, regenerable). Keep tokens.json + DesignSystem.
+.design/raw-*.json
+
+# macOS
+.DS_Store
+
+# Scratch
+*.log
