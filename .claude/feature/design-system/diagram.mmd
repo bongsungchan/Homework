@@ -1,0 +1,88 @@
+classDiagram
+    namespace Tokens {
+        class DSColor {
+            +Red s50~s900
+            +Orange s50~s900
+            +Yellow s50~s900
+            +Green s50~s900
+            +Mint s50~s900
+            +Teal s50~s900
+            +Cyan s50~s900
+            +Blue s50~s900
+            +Indigo s50~s900
+            +Purple s50~s900
+            +Neutral sN0~sN900
+            +foregroundPrimary Color
+            +foregroundSecondary Color
+            +foregroundTertiary Color
+            +containerBorder Color
+            +containerBackground Color
+        }
+        class DSFont {
+            +heading1~heading5 Font
+            +headline / headlineMedium Font
+            +bodyLarge / body / footnote Font
+            +caption / small Font
+            +mobileHeading1~mobileHeading4 Font
+            +bodyLargeMono / bodyMono Font
+        }
+        class DSSpacing {
+            +xxs: 4
+            +xs: 8
+            +sm: 12
+            +md: 16
+            +lg: 24
+            +xl: 32
+            +xxl: 48
+            +xxxl: 64
+        }
+        class DSShadow {
+            <<enumeration>>
+            small
+            medium
+            large
+            +layers() DSShadowLayer[]
+        }
+        class DSShadowLayer {
+            +color Color
+            +radius CGFloat
+            +x CGFloat
+            +y CGFloat
+        }
+    }
+
+    namespace Components {
+        class RepositoryRow {
+            +avatarURL URL?
+            +name String
+            +description String?
+        }
+        class EmptyStateView {
+            +title String
+            +message String
+        }
+        class ErrorStateView {
+            +title String
+            +message String
+            +retryTitle String
+            +onRetry () -> Void
+        }
+        class LoadingFooter {
+            +message String
+        }
+    }
+
+    DSShadow --> DSShadowLayer : layers
+    RepositoryRow ..> DSColor : foreground / container
+    RepositoryRow ..> DSFont : bodyMedium / footnote
+    RepositoryRow ..> DSSpacing : md / xs / sm
+    RepositoryRow ..> DSShadow : small
+    EmptyStateView ..> DSColor : foreground tokens
+    EmptyStateView ..> DSFont : headlineMedium / footnote
+    EmptyStateView ..> DSSpacing : md / xxs / xxl
+    ErrorStateView ..> DSColor : Red.s500 / Blue.s500
+    ErrorStateView ..> DSFont : headlineMedium / bodyMedium / footnote
+    ErrorStateView ..> DSSpacing : lg / xxs / sm / xl / xs / xxl
+    LoadingFooter ..> DSColor : foregroundSecondary
+    LoadingFooter ..> DSFont : footnote
+    LoadingFooter ..> DSSpacing : sm / md

@@ -154,6 +154,8 @@ public enum DSColor {
         public static let sN900 = Color(hex: "#091e42")
     }
 
+    // MARK: - Semantic (resolved)
+
     public static let foregroundPrimary = Color.dsDynamic(
         light: Color(hex: "#000000", opacity: 1.0),
         dark: Color(hex: "#FFFFFF", opacity: 1.0))
@@ -166,7 +168,18 @@ public enum DSColor {
     public static let containerBorder = Color.dsDynamic(
         light: Color(hex: "#FFFFFF", opacity: 0.1),
         dark: Color(hex: "#FFFFFF", opacity: 0.07))
+    /// Dark-mode solid is `#000000 @ 50%`. Light value unresolved in Figma (gradient/transparent swatch).
     public static let containerBackground = Color.dsDynamic(
         light: Color(hex: "#ffffff"),
         dark: Color(hex: "#000000", opacity: 0.5))
+
+    // MARK: - Unresolved tokens (gradient / transparent in Figma source)
+
+    // TODO: confirm from Figma — semanticLight.Container Background: no SOLID fill on swatch (likely gradient/transparent)
+    // TODO: confirm from Figma — semanticLight.Container Divider: no SOLID fill on swatch (likely gradient/transparent)
+    // TODO: confirm from Figma — semanticLight.Text Gradient Primary: gradient fill, cannot resolve to single Color
+    // TODO: confirm from Figma — semanticLight.Text Gradient Secondary: gradient fill, cannot resolve to single Color
+    // TODO: confirm from Figma — semanticDark.Container Divider: no SOLID fill on swatch (likely gradient/transparent)
+    // TODO: confirm from Figma — semanticDark.Text Gradient Primary: gradient fill, cannot resolve to single Color
+    // TODO: confirm from Figma — semanticDark.Text Gradient Secondary: gradient fill, cannot resolve to single Color
 }
