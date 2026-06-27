@@ -12,6 +12,7 @@ public struct RepositoryClient: Sendable {
 
 extension RepositoryClient: DependencyKey {
     public static var liveValue: RepositoryClient { .live() }
+    public static var testValue: RepositoryClient { RepositoryClient() }
 }
 
 public extension DependencyValues {

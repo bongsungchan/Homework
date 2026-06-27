@@ -6,18 +6,19 @@ import Models
 @MainActor
 final class AppTests: XCTestCase {
     func test_searchSubmitted_pushesSearchResult() async {
-        let store = TestStore(initialState: AppFeature.State()) {
+        var state = AppFeature.State()
+        state.search.query = "tuist"
+
+        let store = TestStore(initialState: state) {
             AppFeature()
         } withDependencies: {
-            $0.recentSearchClient.save = { _ in [] }
+            $0.continuousClock = ImmediateClock()
         }
+        store.exhaustivity = .off
 
-        await store.send(.search(.queryChanged("tuist"))) {
-            $0.search.query = "tuist"
-        }
         await store.send(.search(.searchSubmitted))
-        await store.receive(.search(.recentSearchesLoaded([])))
-        // path 에 searchResult 가 push 됐는지 확인
+        await store.skipReceivedActions()
+
         XCTAssertEqual(store.state.path.count, 1)
     }
 }

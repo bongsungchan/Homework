@@ -1,5 +1,4 @@
 // swift-tools-version: 5.9
-// Tuist が依存解決に使う SPM Package manifest
 import PackageDescription
 
 #if TUIST
@@ -10,8 +9,21 @@ let packageSettings = PackageSettings(
         "ComposableArchitecture": .framework
     ],
     baseSettings: .settings(
-        base: ["IPHONEOS_DEPLOYMENT_TARGET": "17.0"]
-    )
+        base: [
+            "SWIFT_VERSION": "5",
+            "SWIFT_STRICT_CONCURRENCY": "minimal"
+        ]
+    ),
+    targetSettings: [
+        "ComposableArchitecture": ["SWIFT_VERSION": "5"],
+        "SwiftUINavigation": ["SWIFT_VERSION": "5"],
+        "UIKitNavigation": ["SWIFT_VERSION": "5"],
+        "SwiftNavigation": ["SWIFT_VERSION": "5"],
+        "Perception": ["SWIFT_VERSION": "5"],
+        "PerceptionCore": ["SWIFT_VERSION": "5"],
+        "Dependencies": ["SWIFT_VERSION": "5"],
+        "CasePaths": ["SWIFT_VERSION": "5"]
+    ]
 )
 #endif
 
@@ -20,7 +32,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "1.15.0"
+            exact: "1.15.0"
+        ),
+        .package(
+            url: "https://github.com/pointfreeco/swift-navigation",
+            exact: "2.5.1"
         )
     ]
 )
