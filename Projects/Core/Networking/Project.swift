@@ -5,6 +5,7 @@ let project = Project.module(
     name: Module.coreNetworking.name,
     bundleId: Module.coreNetworking.bundleId,
     dependencies: [
-        Module.domainModels.targetDependency
+        Module.domainModels.targetDependency,
+        .external(name: "ComposableArchitecture")
     ]
 )

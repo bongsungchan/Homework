@@ -7,8 +7,9 @@ import Models
 final class SearchResultFeatureTests: XCTestCase {
     func test_onAppear_loadsRepositories() async {
         let repo = GithubRepository(
-            id: 1, name: "swift", ownerLogin: "apple",
-            avatarURL: nil, htmlURL: URL(string: "https://github.com/apple/swift")!,
+            id: 1, name: "swift",
+            owner: GithubRepository.Owner(login: "apple", avatarURL: nil),
+            htmlURL: URL(string: "https://github.com/apple/swift")!,
             description: nil, stargazersCount: 0
         )
         let result = SearchResult(totalCount: 1, items: [repo])

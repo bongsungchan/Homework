@@ -2,14 +2,12 @@ import SwiftUI
 import Models
 import DesignSystem
 
-// MARK: - RepositoryRowView
-
 struct RepositoryRowView: View {
     let repository: GithubRepository
 
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: repository.avatarURL) { image in
+            AsyncImage(url: repository.owner.avatarURL) { image in
                 image.resizable().scaledToFill()
             } placeholder: {
                 Color.dsSecondaryBackground
@@ -24,7 +22,7 @@ struct RepositoryRowView: View {
                     .foregroundStyle(Color.dsPrimaryText)
                     .lineLimit(1)
 
-                Text(repository.ownerLogin)
+                Text(repository.owner.login)
                     .font(.dsCaption)
                     .foregroundStyle(Color.dsSecondaryText)
                     .lineLimit(1)

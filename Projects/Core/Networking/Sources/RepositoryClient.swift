@@ -1,56 +1,94 @@
+import ComposableArchitecture
 import Foundation
 import Models
+import OSLog
 
-// MARK: - RepositoryClient
-
+@DependencyClient
 public struct RepositoryClient: Sendable {
-    public var searchRepositories: @Sendable (_ keyword: String, _ page: Int) async throws -> SearchResult
-
-    public init(searchRepositories: @escaping @Sendable (String, Int) async throws -> SearchResult) {
-        self.searchRepositories = searchRepositories
+    public var searchRepositories: @Sendable (_ keyword: String, _ page: Int) async throws -> SearchResult = { _, _ in
+        SearchResult(totalCount: 0, items: [])
     }
 }
 
-// MARK: - Live
+extension RepositoryClient: DependencyKey {
+    public static var liveValue: RepositoryClient { .live() }
+}
+
+public extension DependencyValues {
+    var repositoryClient: RepositoryClient {
+        get { self[RepositoryClient.self] }
+        set { self[RepositoryClient.self] = newValue }
+    }
+}
 
 extension RepositoryClient {
     public static func live(session: URLSession = .shared) -> Self {
-        RepositoryClient { keyword, page in
-            guard let encodedKeyword = keyword.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                  let url = URL(string: "https://api.github.com/search/repositories?q=\(encodedKeyword)&page=\(page)")
-            else {
-                throw SearchError.network
+        let logger = Logger(subsystem: "com.kurly.githubsearch", category: "Networking")
+
+        return RepositoryClient(
+            searchRepositories: { keyword, page in
+                guard
+                    let encoded = keyword.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                    let url = URL(string: "https://api.github.com/search/repositories?q=\(encoded)&page=\(page)")
+                else {
+                    throw SearchError.network
+                }
+
+                var request = URLRequest(url: url)
+                request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+                request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
+
+                let data: Data
+                let response: URLResponse
+
+                do {
+                    (data, response) = try await session.data(for: request)
+                } catch let urlError as URLError {
+                    logger.error("URLError: \(urlError.localizedDescription)")
+                    throw SearchError.network
+                } catch {
+                    logger.error("Unknown network error: \(error.localizedDescription)")
+                    throw SearchError.network
+                }
+
+                guard let http = response as? HTTPURLResponse else {
+                    throw SearchError.network
+                }
+
+                try http.validateGitHub()
+
+                do {
+                    let dto = try JSONDecoder().decode(SearchResponseDTO.self, from: data)
+                    let result = dto.toDomain()
+                    if result.items.isEmpty {
+                        throw SearchError.empty
+                    }
+                    return result
+                } catch let searchError as SearchError {
+                    throw searchError
+                } catch {
+                    logger.error("Decoding error: \(error.localizedDescription)")
+                    throw SearchError.decoding
+                }
             }
-
-            var request = URLRequest(url: url)
-            request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-
-            let (data, response) = try await session.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw SearchError.network
-            }
-
-            switch httpResponse.statusCode {
-            case 200:
-                break
-            case 403:
-                throw SearchError.rateLimited
-            default:
-                throw SearchError.network
-            }
-
-            do {
-                let dto = try JSONDecoder().decode(SearchResponseDTO.self, from: data)
-                return dto.toDomain()
-            } catch {
-                throw SearchError.decoding
-            }
-        }
+        )
     }
 }
 
-// MARK: - DTO (private)
+private extension HTTPURLResponse {
+    func validateGitHub() throws {
+        switch statusCode {
+        case 200 ..< 300:
+            return
+        case 403:
+            throw SearchError.rateLimited
+        case 422:
+            throw SearchError.network
+        default:
+            throw SearchError.network
+        }
+    }
+}
 
 private struct SearchResponseDTO: Decodable {
     let totalCount: Int
@@ -88,8 +126,10 @@ private struct RepositoryDTO: Decodable {
         return GithubRepository(
             id: id,
             name: name,
-            ownerLogin: owner.login,
-            avatarURL: URL(string: owner.avatarUrl),
+            owner: GithubRepository.Owner(
+                login: owner.login,
+                avatarURL: URL(string: owner.avatarUrl)
+            ),
             htmlURL: htmlURL,
             description: description,
             stargazersCount: stargazersCount

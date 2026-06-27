@@ -1,55 +1,52 @@
+import Dependencies
+import DependenciesMacros
 import Foundation
 import Models
 
-// MARK: - RecentSearchClient
-
+@DependencyClient
 public struct RecentSearchClient: Sendable {
-    public var load: @Sendable () async throws -> [RecentSearch]
-    public var save: @Sendable (_ keyword: String) async throws -> [RecentSearch]
-    public var delete: @Sendable (_ id: UUID) async throws -> [RecentSearch]
-    public var deleteAll: @Sendable () async throws -> Void
-
-    public init(
-        load: @escaping @Sendable () async throws -> [RecentSearch],
-        save: @escaping @Sendable (String) async throws -> [RecentSearch],
-        delete: @escaping @Sendable (UUID) async throws -> [RecentSearch],
-        deleteAll: @escaping @Sendable () async throws -> Void
-    ) {
-        self.load = load
-        self.save = save
-        self.delete = delete
-        self.deleteAll = deleteAll
-    }
+    public var load: @Sendable () async throws -> [RecentSearch] = { [] }
+    public var save: @Sendable (_ query: String) async throws -> [RecentSearch] = { _ in [] }
+    public var delete: @Sendable (_ id: UUID) async throws -> [RecentSearch] = { _ in [] }
+    public var deleteAll: @Sendable () async throws -> Void = {}
 }
-
-// MARK: - Live (UserDefaults)
 
 extension RecentSearchClient {
     private static let maxCount = 10
     private static let storageKey = "com.kurly.githubsearch.recentSearches"
 
     public static func live(defaults: UserDefaults = .standard) -> Self {
-        RecentSearchClient(
+        func loadItems() -> [RecentSearch] {
+            guard
+                let data = defaults.data(forKey: storageKey),
+                let dtos = try? JSONDecoder().decode([RecentSearchDTO].self, from: data)
+            else { return [] }
+            return dtos.map(\.toDomain).sorted { $0.date > $1.date }
+        }
+
+        func persist(_ items: [RecentSearch]) {
+            let dtos = items.map(RecentSearchDTO.init)
+            defaults.set(try? JSONEncoder().encode(dtos), forKey: storageKey)
+        }
+
+        return RecentSearchClient(
             load: {
-                guard let data = defaults.data(forKey: storageKey),
-                      let items = try? JSONDecoder().decode([RecentSearchDTO].self, from: data)
-                else { return [] }
-                return items.map(\.toDomain).sorted { $0.searchedAt > $1.searchedAt }
+                loadItems()
             },
-            save: { keyword in
-                var items = (try? await Self.live(defaults: defaults).load()) ?? []
-                items.removeAll { $0.keyword == keyword }
-                items.insert(RecentSearch(keyword: keyword), at: 0)
-                if items.count > maxCount { items = Array(items.prefix(maxCount)) }
-                let dtos = items.map(RecentSearchDTO.init)
-                defaults.set(try? JSONEncoder().encode(dtos), forKey: storageKey)
+            save: { query in
+                var items = loadItems()
+                items.removeAll { $0.query == query }
+                items.insert(RecentSearch(query: query, date: Date()), at: 0)
+                if items.count > maxCount {
+                    items = Array(items.prefix(maxCount))
+                }
+                persist(items)
                 return items
             },
             delete: { id in
-                var items = (try? await Self.live(defaults: defaults).load()) ?? []
+                var items = loadItems()
                 items.removeAll { $0.id == id }
-                let dtos = items.map(RecentSearchDTO.init)
-                defaults.set(try? JSONEncoder().encode(dtos), forKey: storageKey)
+                persist(items)
                 return items
             },
             deleteAll: {
@@ -59,20 +56,18 @@ extension RecentSearchClient {
     }
 }
 
-// MARK: - DTO
-
 private struct RecentSearchDTO: Codable {
     let id: UUID
-    let keyword: String
-    let searchedAt: Date
+    let query: String
+    let date: Date
 
     init(_ model: RecentSearch) {
         self.id = model.id
-        self.keyword = model.keyword
-        self.searchedAt = model.searchedAt
+        self.query = model.query
+        self.date = model.date
     }
 
     var toDomain: RecentSearch {
-        RecentSearch(id: id, keyword: keyword, searchedAt: searchedAt)
+        RecentSearch(id: id, query: query, date: date)
     }
 }

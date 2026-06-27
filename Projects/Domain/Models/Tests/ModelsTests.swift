@@ -3,8 +3,8 @@ import XCTest
 
 final class ModelsTests: XCTestCase {
     func test_recentSearch_defaultIdIsUnique() {
-        let a = RecentSearch(keyword: "swift")
-        let b = RecentSearch(keyword: "swift")
+        let a = RecentSearch(query: "swift")
+        let b = RecentSearch(query: "swift")
         XCTAssertNotEqual(a.id, b.id)
     }
 

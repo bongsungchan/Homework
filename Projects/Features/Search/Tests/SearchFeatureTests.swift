@@ -6,7 +6,7 @@ import Models
 @MainActor
 final class SearchFeatureTests: XCTestCase {
     func test_onAppear_loadsRecentSearches() async {
-        let items = [RecentSearch(keyword: "swift")]
+        let items = [RecentSearch(query: "swift")]
         let store = TestStore(initialState: SearchFeature.State()) {
             SearchFeature()
         } withDependencies: {
@@ -20,7 +20,7 @@ final class SearchFeatureTests: XCTestCase {
     }
 
     func test_queryChanged_filtersSuggestions() async {
-        let items = [RecentSearch(keyword: "swift"), RecentSearch(keyword: "swiftui")]
+        let items = [RecentSearch(query: "swift"), RecentSearch(query: "swiftui")]
         var state = SearchFeature.State()
         state.recentSearches = items
         let store = TestStore(initialState: state) {
@@ -34,7 +34,7 @@ final class SearchFeatureTests: XCTestCase {
     }
 
     func test_searchSubmitted_savesKeyword() async {
-        let saved = [RecentSearch(keyword: "tuist")]
+        let saved = [RecentSearch(query: "tuist")]
         let store = TestStore(initialState: SearchFeature.State()) {
             SearchFeature()
         } withDependencies: {

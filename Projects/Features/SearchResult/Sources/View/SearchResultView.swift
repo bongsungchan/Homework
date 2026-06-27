@@ -3,8 +3,6 @@ import SwiftUI
 import Models
 import DesignSystem
 
-// MARK: - SearchResultView
-
 public struct SearchResultView: View {
     let store: StoreOf<SearchResultFeature>
 
@@ -40,8 +38,6 @@ public struct SearchResultView: View {
         }
     }
 
-    // MARK: - Subviews
-
     @ViewBuilder
     private func repositoryList(viewStore: ViewStoreOf<SearchResultFeature>) -> some View {
         List {
@@ -56,7 +52,7 @@ public struct SearchResultView: View {
                         viewStore.send(.fetchNextPage)
                     }
                 }
-                .accessibilityLabel("\(repo.name), \(repo.ownerLogin)")
+                .accessibilityLabel("\(repo.name), \(repo.owner.login)")
             }
 
             if let paginationError = viewStore.paginationError {
@@ -99,8 +95,6 @@ public struct SearchResultView: View {
         .padding(.vertical, 8)
     }
 }
-
-// MARK: - SearchError+UserFacingMessage
 
 private extension SearchError {
     var userFacingMessage: String {

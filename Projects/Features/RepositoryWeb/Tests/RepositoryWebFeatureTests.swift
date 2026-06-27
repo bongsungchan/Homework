@@ -15,8 +15,9 @@ final class RepositoryWebFeatureTests: XCTestCase {
 
     func test_pageLoadFinished_setsIsLoadingFalse() async {
         let repo = GithubRepository(
-            id: 1, name: "swift", ownerLogin: "apple",
-            avatarURL: nil, htmlURL: URL(string: "https://github.com/apple/swift")!,
+            id: 1, name: "swift",
+            owner: GithubRepository.Owner(login: "apple", avatarURL: nil),
+            htmlURL: URL(string: "https://github.com/apple/swift")!,
             description: nil, stargazersCount: 0
         )
         let store = makeStore(repository: repo)

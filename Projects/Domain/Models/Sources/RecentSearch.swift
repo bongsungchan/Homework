@@ -1,15 +1,13 @@
 import Foundation
 
-// MARK: - RecentSearch
-
 public struct RecentSearch: Equatable, Identifiable, Sendable {
     public let id: UUID
-    public let keyword: String
-    public let searchedAt: Date
+    public let query: String
+    public let date: Date
 
-    public init(id: UUID = UUID(), keyword: String, searchedAt: Date = Date()) {
+    public init(id: UUID = UUID(), query: String, date: Date = Date()) {
         self.id = id
-        self.keyword = keyword
-        self.searchedAt = searchedAt
+        self.query = query
+        self.date = date
     }
 }

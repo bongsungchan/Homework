@@ -2,8 +2,6 @@ import ComposableArchitecture
 import SwiftUI
 import DesignSystem
 
-// MARK: - SearchView
-
 public struct SearchView: View {
     @Bindable var store: StoreOf<SearchFeature>
 
@@ -30,8 +28,6 @@ public struct SearchView: View {
         .onAppear { store.send(.onAppear) }
     }
 
-    // MARK: - Sections
-
     @ViewBuilder
     private var recentSearchSection: some View {
         if !store.recentSearches.isEmpty {
@@ -41,10 +37,10 @@ public struct SearchView: View {
                         store.send(.recentSearchTapped(item))
                     } label: {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(item.keyword)
+                            Text(item.query)
                                 .font(.dsBody)
                                 .foregroundStyle(Color.dsPrimaryText)
-                            Text(item.searchedAt.formatted(date: .abbreviated, time: .omitted))
+                            Text(item.date.formatted(date: .abbreviated, time: .omitted))
                                 .font(.dsCaption)
                                 .foregroundStyle(Color.dsSecondaryText)
                         }
@@ -56,7 +52,7 @@ public struct SearchView: View {
                             Label("삭제", systemImage: "trash")
                         }
                     }
-                    .accessibilityLabel("\(item.keyword), \(item.searchedAt.formatted(date: .abbreviated, time: .omitted))")
+                    .accessibilityLabel("\(item.query), \(item.date.formatted(date: .abbreviated, time: .omitted))")
                 }
             } header: {
                 HStack {
@@ -75,7 +71,7 @@ public struct SearchView: View {
             Button {
                 store.send(.recentSearchTapped(item))
             } label: {
-                Text(item.keyword)
+                Text(item.query)
                     .font(.dsBody)
                     .foregroundStyle(Color.dsPrimaryText)
             }

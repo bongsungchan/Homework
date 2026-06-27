@@ -1,0 +1,90 @@
+classDiagram
+    direction TB
+
+    namespace Models {
+        class GithubRepository {
+            +Int id
+            +String name
+            +Owner owner
+            +URL htmlURL
+            +String? description
+            +Int stargazersCount
+        }
+        class GithubRepository_Owner {
+            +String login
+            +URL? avatarURL
+        }
+        class SearchResult {
+            +Int totalCount
+            +[GithubRepository] items
+        }
+        class RecentSearch {
+            +UUID id
+            +String query
+            +Date date
+        }
+        class SearchError {
+            <<enumeration>>
+            network
+            rateLimited
+            decoding
+            empty
+            unknown
+        }
+    }
+
+    namespace Networking {
+        class RepositoryClient {
+            <<DependencyClient>>
+            +searchRepositories(keyword, page) SearchResult
+        }
+        class SearchResponseDTO {
+            <<private>>
+            -toDomain() SearchResult
+        }
+        class RepositoryDTO {
+            <<private>>
+            -toDomain() GithubRepository?
+        }
+        class HTTPURLResponse_Validation {
+            <<extension>>
+            -validateGitHub() throws
+        }
+    }
+
+    namespace Persistence {
+        class RecentSearchClient {
+            <<DependencyClient>>
+            +load() [RecentSearch]
+            +save(query) [RecentSearch]
+            +delete(id) [RecentSearch]
+            +deleteAll()
+        }
+        class RecentSearchDTO {
+            <<private, Codable>>
+            -toDomain RecentSearch
+        }
+    }
+
+    namespace UseCase {
+        class DependencyValues {
+            <<extension>>
+            +repositoryClient RepositoryClient
+            +recentSearchClient RecentSearchClient
+        }
+    }
+
+    GithubRepository "1" --* "1" GithubRepository_Owner : contains
+    SearchResult "1" --* "*" GithubRepository : contains
+
+    RepositoryClient ..> SearchResult : returns
+    RepositoryClient ..> SearchError : throws
+    SearchResponseDTO ..> SearchResult : maps to
+    RepositoryDTO ..> GithubRepository : maps to
+    HTTPURLResponse_Validation ..> SearchError : converts HTTP status
+
+    RecentSearchClient ..> RecentSearch : returns
+    RecentSearchDTO ..> RecentSearch : maps to
+
+    DependencyValues --> RepositoryClient : registers
+    DependencyValues --> RecentSearchClient : registers

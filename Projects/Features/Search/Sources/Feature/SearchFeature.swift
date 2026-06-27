@@ -2,12 +2,8 @@ import ComposableArchitecture
 import Models
 import UseCase
 
-// MARK: - SearchFeature
-
 @Reducer
 public struct SearchFeature {
-
-    // MARK: - State
 
     @ObservableState
     public struct State: Equatable {
@@ -19,8 +15,6 @@ public struct SearchFeature {
         public init() {}
     }
 
-    // MARK: - Action
-
     public enum Action: Equatable {
         case onAppear
         case queryChanged(String)
@@ -31,11 +25,7 @@ public struct SearchFeature {
         case recentSearchesLoaded([RecentSearch])
     }
 
-    // MARK: - Dependencies
-
     @Dependency(\.recentSearchClient) var recentSearchClient
-
-    // MARK: - body
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -50,7 +40,7 @@ public struct SearchFeature {
                 state.query = query
                 state.suggestions = query.isEmpty
                     ? []
-                    : state.recentSearches.filter { $0.keyword.localizedCaseInsensitiveContains(query) }
+                    : state.recentSearches.filter { $0.query.localizedCaseInsensitiveContains(query) }
                 return .none
 
             case .searchSubmitted:
@@ -62,7 +52,7 @@ public struct SearchFeature {
                 }
 
             case let .recentSearchTapped(item):
-                state.query = item.keyword
+                state.query = item.query
                 return .send(.searchSubmitted)
 
             case let .recentSearchDeleted(id):

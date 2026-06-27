@@ -11,7 +11,7 @@ model: sonnet
 입력으로 받은 단계 이름과 산출물 요약을 바탕으로:
 1. `.claude/feature/<phase>/diagram.mmd` — 해당 단계 산출물의 board-grade Mermaid (스킬의 단계별 권장 타입 사용).
 2. `.claude/feature/<phase>/output.md` — 산출물 목록(생성 파일·모듈·컴포넌트), 핵심 결정, 미해결/TODO를 표로 요약 + 다이어그램 임베드(```mermaid 블록).
-3. `mmdc`가 설치돼 있으면 `diagram.png`로 렌더, 없으면 `.mmd`/마크다운만(GitHub이 ```mermaid 렌더).
+3. `mmdc`가 설치돼 있으면 `diagram.png`로 렌더하되 **고해상도 필수**: `mmdc -b white --scale 3 --width 2400`. 렌더 후 `sips -g pixelWidth`로 **가로 ≥ 2000px 확인**, 미달이면 `--width`를 올려 재렌더. 없으면 `.mmd`/마크다운만(GitHub이 ```mermaid 렌더).
 4. 마지막 단계에선 `.claude/feature/pipeline.mmd`(flowchart LR 전체 개요)도 갱신.
 
 ## 규칙
