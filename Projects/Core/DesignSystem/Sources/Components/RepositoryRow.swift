@@ -24,8 +24,10 @@ public struct RepositoryRow: View {
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(DSColor.foregroundTertiary)
+                case .empty:
+                    DSColor.Neutral.sN30
                 @unknown default:
-                    Color(DSColor.Neutral.sN30)
+                    DSColor.Neutral.sN30
                 }
             }
             .frame(width: 44, height: 44)

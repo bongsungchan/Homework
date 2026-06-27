@@ -28,7 +28,7 @@ final class PersistenceTests: XCTestCase {
     func test_save_단일키워드_저장후반환() async throws {
         let result = try await sut.save("swift")
         XCTAssertEqual(result.count, 1)
-        XCTAssertEqual(result[0].keyword, "swift")
+        XCTAssertEqual(result[0].query, "swift")
     }
 
     func test_save_중복키워드_날짜갱신후상단이동() async throws {
@@ -36,8 +36,8 @@ final class PersistenceTests: XCTestCase {
         _ = try await sut.save("tca")
         let result = try await sut.save("swift")
         XCTAssertEqual(result.count, 2)
-        XCTAssertEqual(result[0].keyword, "swift")
-        XCTAssertEqual(result[1].keyword, "tca")
+        XCTAssertEqual(result[0].query, "swift")
+        XCTAssertEqual(result[1].query, "tca")
     }
 
     func test_save_최대10개초과시오래된항목제거() async throws {
@@ -46,7 +46,7 @@ final class PersistenceTests: XCTestCase {
         }
         let result = try await sut.load()
         XCTAssertEqual(result.count, 10)
-        XCTAssertFalse(result.map(\.keyword).contains("keyword1"))
+        XCTAssertFalse(result.map(\.query).contains("keyword1"))
     }
 
     func test_save_날짜내림차순정렬() async throws {
@@ -54,7 +54,7 @@ final class PersistenceTests: XCTestCase {
         _ = try await sut.save("b")
         _ = try await sut.save("c")
         let result = try await sut.load()
-        XCTAssertEqual(result.map(\.keyword), ["c", "b", "a"])
+        XCTAssertEqual(result.map(\.query), ["c", "b", "a"])
     }
 
     func test_delete_특정항목삭제() async throws {
@@ -82,6 +82,6 @@ final class PersistenceTests: XCTestCase {
         _ = try await sut.save("swift")
         let newClient = RecentSearchClient.live(defaults: defaults)
         let result = try await newClient.load()
-        XCTAssertEqual(result.map(\.keyword), ["swift"])
+        XCTAssertEqual(result.map(\.query), ["swift"])
     }
 }

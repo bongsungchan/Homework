@@ -12,8 +12,11 @@ final class NetworkingTests: XCTestCase {
     }
 
     func test_dependencyValues_repositoryClient_returnsLive() {
-        var values = DependencyValues._defaults
-        XCTAssertNotNil(values.repositoryClient.searchRepositories)
+        let client = withDependencies({ _ in }) {
+            @Dependency(\.repositoryClient) var client
+            return client
+        }
+        XCTAssertNotNil(client.searchRepositories)
     }
 
     func test_testValue_canBeOverridden() async throws {
@@ -23,8 +26,7 @@ final class NetworkingTests: XCTestCase {
                 GithubRepository(
                     id: 1,
                     name: "swift",
-                    ownerLogin: "apple",
-                    avatarURL: nil,
+                    owner: GithubRepository.Owner(login: "apple", avatarURL: nil),
                     htmlURL: URL(string: "https://github.com/apple/swift")!,
                     description: nil,
                     stargazersCount: 999

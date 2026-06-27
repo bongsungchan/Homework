@@ -1,0 +1,46 @@
+stateDiagram-v2
+    direction LR
+
+    [*] --> 빌드대기
+
+    빌드대기 --> 빌드중 : tuist generate
+    빌드중 --> 빌드실패 : 컴파일 오류
+    빌드중 --> 빌드성공 : 컴파일 통과
+    빌드실패 --> [*]
+
+    빌드성공 --> 테스트실행중 : tuist test
+
+    state 테스트실행중 {
+        direction TB
+        [*] --> 코어테스트
+        코어테스트 --> 도메인테스트
+        도메인테스트 --> 피처테스트
+        피처테스트 --> 앱테스트
+
+        state 코어테스트 {
+            DesignSystem테스트
+            Networking테스트
+            Persistence테스트
+        }
+        state 도메인테스트 {
+            Models테스트
+            UseCase테스트
+        }
+        state 피처테스트 {
+            Search피처테스트
+            SearchResult피처테스트
+            RepositoryWeb피처테스트
+        }
+        state 앱테스트 {
+            App통합테스트
+        }
+    }
+
+    테스트실행중 --> 부분실패 : 일부 타깃 실패
+    테스트실행중 --> 전체통과 : 모든 타깃 통과
+
+    부분실패 --> 원인분석 : 실패 파일·라인 추출
+    원인분석 --> 수정대기 : 수정 방향 제안
+    수정대기 --> 빌드대기 : 사용자 승인 후 재시도
+
+    전체통과 --> [*]

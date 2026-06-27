@@ -8,7 +8,10 @@ import ProjectDescription
 let packageSettings = PackageSettings(
     productTypes: [
         "ComposableArchitecture": .framework
-    ]
+    ],
+    baseSettings: .settings(
+        base: ["IPHONEOS_DEPLOYMENT_TARGET": "17.0"]
+    )
 )
 #endif
 

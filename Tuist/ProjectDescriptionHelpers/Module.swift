@@ -3,7 +3,7 @@ import ProjectDescription
 // MARK: - Constants
 
 public let bundleIdPrefix = "com.kurly.githubsearch"
-public let deploymentTarget: DeploymentTargets = .iOS("16.0")
+public let deploymentTarget: DeploymentTargets = .iOS("17.0")
 public let swiftVersion: SettingValue = "5.9"
 
 // MARK: - Module
