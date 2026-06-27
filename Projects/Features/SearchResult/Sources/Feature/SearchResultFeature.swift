@@ -2,12 +2,8 @@ import ComposableArchitecture
 import Models
 import UseCase
 
-// MARK: - SearchResultFeature
-
 @Reducer
 public struct SearchResultFeature {
-
-    // MARK: - State
 
     @ObservableState
     public struct State: Equatable {
@@ -16,6 +12,7 @@ public struct SearchResultFeature {
         public var totalCount: Int = 0
         public var currentPage: Int = 1
         public var hasNextPage: Bool = false
+        public var isPaginationLoading: Bool = false
         public var viewState: ViewState = .idle
         public var paginationError: SearchError?
 
@@ -32,8 +29,6 @@ public struct SearchResultFeature {
         }
     }
 
-    // MARK: - Action
-
     public enum Action: Equatable {
         case onAppear
         case fetchNextPage
@@ -45,56 +40,65 @@ public struct SearchResultFeature {
         case repositoryTapped(GithubRepository)
     }
 
-    // MARK: - Dependencies
-
     @Dependency(\.repositoryClient) var repositoryClient
 
     private enum CancelID { case search }
 
-    // MARK: - body
-
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+
             case .onAppear:
                 state.viewState = .loading
                 state.currentPage = 1
+                state.isPaginationLoading = false
+                state.paginationError = nil
                 return search(keyword: state.keyword, page: 1)
 
             case .fetchNextPage:
-                guard state.hasNextPage, state.paginationError == nil else { return .none }
-                let nextPage = state.currentPage + 1
-                return search(keyword: state.keyword, page: nextPage)
+                guard state.hasNextPage,
+                      !state.isPaginationLoading,
+                      state.paginationError == nil
+                else { return .none }
+                state.isPaginationLoading = true
+                let page = state.currentPage
+                return search(keyword: state.keyword, page: page)
 
             case let .repositoriesLoaded(result):
-                let newItems = result.items
-                if state.currentPage == 1 {
-                    state.repositories = newItems
+                let isFirstPage = state.currentPage == 1
+                if isFirstPage {
+                    state.repositories = result.items
                 } else {
-                    state.repositories += newItems
+                    state.repositories += result.items
                 }
                 state.totalCount = result.totalCount
                 state.currentPage += 1
                 state.hasNextPage = state.repositories.count < result.totalCount
-                state.viewState = state.repositories.isEmpty ? .empty : .loaded
+                state.isPaginationLoading = false
                 state.paginationError = nil
+                state.viewState = state.repositories.isEmpty ? .empty : .loaded
                 return .none
 
             case let .searchFailed(error):
                 state.viewState = .failed(error)
+                state.isPaginationLoading = false
                 return .none
 
             case let .paginationFailed(error):
                 state.paginationError = error
+                state.isPaginationLoading = false
                 return .none
 
             case .retryTapped:
                 state.viewState = .loading
                 state.currentPage = 1
+                state.isPaginationLoading = false
+                state.paginationError = nil
                 return search(keyword: state.keyword, page: 1)
 
             case .retryPaginationTapped:
                 state.paginationError = nil
+                state.isPaginationLoading = true
                 let page = state.currentPage
                 return search(keyword: state.keyword, page: page)
 

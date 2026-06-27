@@ -53,3 +53,10 @@ public extension Color {
     static func dsDynamic(light: Color, dark: Color) -> Color { light }
 }
 #endif
+
+public extension Color {
+    static var dsBackground: Color { DSColor.background }
+    static var dsPrimaryText: Color { DSColor.primaryText }
+    static var dsSecondaryText: Color { DSColor.secondaryText }
+    static var dsAccent: Color { DSColor.accent }
+}
