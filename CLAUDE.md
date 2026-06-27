@@ -141,7 +141,7 @@ tuist test         # 테스트
 
 | 성격 | 모델 | 대상 |
 | --- | --- | --- |
-| **신규 개발 / 수정** | **Sonnet** | `tuist-scaffolder`, `tca-feature-builder`, `swiftui-view-builder`, `test-author` / `/new-feature`, `/verify` / Workflow Scaffold·Core·Features·Verify 페이즈 |
+| **신규 개발 / 수정** | **Sonnet** | `tuist-scaffolder`, `tca-feature-builder`, `swiftui-view-builder`, `test-author` / `/new-feature`, `/verify`, `/device-verify` / Workflow Scaffold·Core·Features·Verify·DeviceVerify 페이즈 |
 | **분석 / 계획 / 리뷰** | **Opus** | `swift-reviewer` / `/review` / Workflow Review 페이즈 / 아키텍처 설계·요구사항 분석 |
 
 - Agent는 frontmatter `model:`, Command는 frontmatter `model:`, Workflow는 `agent(..., { model })`로 지정.
