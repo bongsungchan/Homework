@@ -23,6 +23,7 @@ let project = Project(
             ],
             settings: .settings(
                 base: ["SWIFT_VERSION": swiftVersion]
+                    .merging(stabilizationSettings) { _, new in new }
             )
         ),
         .target(
@@ -37,6 +38,7 @@ let project = Project(
             ],
             settings: .settings(
                 base: ["SWIFT_VERSION": swiftVersion]
+                    .merging(stabilizationSettings) { _, new in new }
             )
         )
     ]

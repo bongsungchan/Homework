@@ -12,16 +12,22 @@ let packageSettings = PackageSettings(
         // 공유 전이 의존성도 단일 동적 프레임워크로 통일한다.
         "IssueReporting": .framework,
         "XCTestDynamicOverlay": .framework,
-        // swift-syntax C shim의 module.modulemap이 읽기 전용으로 프레임워크에 복사되어
-        // tuist generate 후 재빌드 시 "cp: ... Permission denied"로 실패하는 문제를 막기 위해
-        // 프레임워크 대신 정적 라이브러리로 빌드한다(매크로는 빌드타임 전용이라 안전).
-        "_SwiftSyntaxCShims": .staticFramework,
-        "_SwiftLibraryPluginProviderCShims": .staticFramework
+        // swift-syntax C shim의 읽기 전용 module.modulemap을 프레임워크로 복사하는
+        // "Copy Module Map" 스크립트 단계가, tuist generate 후 stale DerivedData 위에서
+        // 재실행될 때 "cp: ... Permission denied"(PhaseScriptExecution failed)로 실패한다.
+        // 프레임워크가 아닌 정적 라이브러리로 빌드하면 해당 복사 스크립트 자체가 생성되지 않는다.
+        // (매크로는 빌드타임 전용이라 정적 링크로 안전.)
+        "_SwiftSyntaxCShims": .staticLibrary,
+        "_SwiftLibraryPluginProviderCShims": .staticLibrary
     ],
     baseSettings: .settings(
         base: [
             "SWIFT_VERSION": "5",
-            "SWIFT_STRICT_CONCURRENCY": "minimal"
+            "SWIFT_STRICT_CONCURRENCY": "minimal",
+            // Xcode 16 Explicitly Built Modules + SPM 매크로 플러그인 조합에서
+            // generate 후 증분 빌드의 간헐적 macro/modulemap 오류를 막기 위해 비활성화.
+            "SWIFT_ENABLE_EXPLICIT_MODULES": "NO",
+            "CLANG_ENABLE_EXPLICIT_MODULES": "NO"
         ]
     ),
     targetSettings: [

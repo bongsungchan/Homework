@@ -26,3 +26,6 @@ xcuserdata/
 
 # Scratch
 *.log
+
+# Office documents (local only)
+*.docx

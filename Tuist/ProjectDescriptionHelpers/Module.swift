@@ -6,6 +6,16 @@ public let bundleIdPrefix = "com.kurly.githubsearch"
 public let deploymentTarget: DeploymentTargets = .iOS("17.0")
 public let swiftVersion: SettingValue = "5.9"
 
+/// 모든 타깃에 공통 적용하는 빌드 안정화 설정.
+/// Xcode 16의 Explicitly Built Modules는 SPM 매크로 플러그인(TCA 등)과 조합 시
+/// `tuist generate` 후 증분 빌드에서 "macro could not be found" / 읽기전용 modulemap 복사 실패 같은
+/// 간헐적 오류를 유발한다. 명시적 모듈 빌드를 꺼서 매번 Clean Build Folder 하지 않아도 안정적으로 빌드되게 한다.
+/// (트레이드오프: 클린 빌드가 다소 느려질 수 있으나 재현 불가한 stale 오류를 제거한다.)
+public let stabilizationSettings: SettingsDictionary = [
+    "SWIFT_ENABLE_EXPLICIT_MODULES": "NO",
+    "CLANG_ENABLE_EXPLICIT_MODULES": "NO"
+]
+
 // MARK: - Module
 
 public enum Module {
@@ -87,7 +97,7 @@ public extension Project {
                 base: [
                     "SWIFT_VERSION": swiftVersion,
                     "ENABLE_TESTABILITY": "YES"
-                ]
+                ].merging(stabilizationSettings) { _, new in new }
             )
         )
 
@@ -103,6 +113,7 @@ public extension Project {
             ] + testDependencies,
             settings: .settings(
                 base: ["SWIFT_VERSION": swiftVersion]
+                    .merging(stabilizationSettings) { _, new in new }
             )
         )
 
